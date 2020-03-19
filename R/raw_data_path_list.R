@@ -5,5 +5,6 @@ raw_data_path_list <- function(){
     file.path('time_series_19-covid-') %>%
     paste0(c('Confirmed','Recovered','Deaths')) %>%
     paste0('.csv') %>%
-    list(confirmed = .[1], recovered = .[2], deaths = .[3])
+    list(confirmed = .[1], recovered = .[2], deaths = .[3]) %>%
+    tail(3)
 }
