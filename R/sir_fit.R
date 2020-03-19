@@ -3,8 +3,8 @@ sir_fit <- function(data,country){
   data[country %in% country_,.(confirmed=sum(confirmed,na.rm = T),
                                dead=sum(dead,na.rm = T),
                                recovered=sum(recovered,na.rm = T)),
-       by=.(country,date)] %>%
-    .[dead>0]->df
+       by=.(country,date)] -> df
+  df <- df[date>=get_flag_date(df)]
   infected_vector <- df$confirmed
   dt[country %in% country_,.(pop = .(max(population))),by=.(country)] %>%
     .[['pop']] %>% unlist() %>% sum -> population
