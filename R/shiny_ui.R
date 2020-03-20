@@ -1,4 +1,4 @@
-shiny_ui_sidebar <- function(path,folder='covid_data'){get_countries
+shiny_ui_sidebar <- function(path,folder='covid_data'){
   argonDashSidebar(
     vertical = TRUE,
     skin = "dark",
@@ -8,6 +8,12 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){get_countries
     id = "my_sidebar",
     brand_url = 'https://geodb.com',
     brand_logo = 'https://geodb.com/src/sections/HeaderEN/assets/icons/logo2acee178e01fd3dd965ddfecfc9162bb.svg',
+    prettySwitch(slim = T,bigger = T,
+      inputId = "id_log",
+      label = "Log",
+      value = TRUE,
+      status = "primary"
+    ),
     pickerInput(
       inputId = "id_country",
       label = "Country",
@@ -23,9 +29,18 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){get_countries
       force_edges = TRUE,
       selected = 'May',
       choices = month.abb
+    ),
+    argonSidebarDivider(),
+    argonBadge(
+      text = "Medium Post",
+      src = "https://medium.com/@GeoDataBlock/covid19-pandemic-trend-prediction-ccc8b68accb1",
+      pill = F,
+      status = "success"
     )
   )
 }
+
+
 shiny_ui_navbar <- function(){
   argonDashNavbar()
 }

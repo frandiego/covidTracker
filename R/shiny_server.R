@@ -25,17 +25,13 @@ shiny_server <- function(path,folder='covid_data'){
                              icon = icon('cross'),width = 4,
                              background_color = 'red'))
     })
-    reactive_predict <- reactive({
-      sir <- sir_fit(rdata(),input$id_country)
-      sir_predict(sir,400)
-    })
-    reactive_filter_predict <- reactive({
-      reactive_predict() %>%
-        .[date<upper_threshold_date(input$id_max_month)] %>% .[]
-    })
     reactive_plot <- reactive({
-      sir_plot(reactive_filter_predict(),T,10)
-    })
+      sir_fit_predict(data = rdata(),
+                      country = input$id_country,
+                      log = input$id_log,
+                      month = input$id_max_month,
+                      plot=T)
+      })
     output$id_sir <- highcharter::renderHighchart(expr = reactive_plot())
     output$id_info_conf <-  renderUI(reactive_infocard_confirmed())
     output$id_info_recv <-  renderUI(reactive_infocard_recovered())

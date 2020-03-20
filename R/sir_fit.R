@@ -5,9 +5,10 @@ sir_fit <- function(data,country){
                                recovered=sum(recovered,na.rm = T)),
        by=.(country,date)] -> df
   df <- df[date>=get_flag_date(df)]
+
   infected_vector <- df$confirmed
   data[country %in% country_,.(pop=max(population,na.rm = T)),
-       by=.(country)][['pop']] %>% sum(na.rm = T) -> population
+       by=.(country)][['pop']] %>% sum(na.rm = T) %>% as.integer() -> population
   init_ <- c(S = population-infected_vector[1],I = infected_vector[1],R = 0)
   SIR <- function(time, state, parameters, N = population) {
     par <- as.list(c(state, parameters))
