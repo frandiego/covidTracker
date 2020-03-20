@@ -5,7 +5,7 @@ update_population <- function(path){
     .[,max_date := max(date),by =c('iso3c','country') ] %>%
     .[date == max_date] %>%
     .[,-c('date','max_date'),with=F] -> df
-  dt <- read_data(config_path)
+  dt <- read_data(path)
   old_ <- c('United States','Venezuela, RB','Russian Federation',
             'Gambia, The','Brunei Darussalam','Egypt, Arab Rep.',
             'Iran, Islamic Rep.','Korea, Rep.',
