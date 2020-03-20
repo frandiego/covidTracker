@@ -12,5 +12,6 @@ read_covid_data <- function(path,folder='covid_data'){
       by = .(country,date)] -> data
   df <- rbindlist(list(data,drtm))
   df <- merge(df,dfpop, by = 'country')
-  df[,date:= as.Date(date)]
+  df[,date:= as.Date(date)] %>%
+    .[]
 }
