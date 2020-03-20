@@ -1,11 +1,16 @@
-read_covid_data <- function(path){
-  path %>%
-    file.path('covid_data/data.csv') %>%
-    fread %>%
-    .[,date := as.Date(date)] %>%
-    .[country == 'Taiwan*',country:= 'Taiwan']-> dt
-  dfp <- fread(file.path(path,'covid_data/population.csv'))
-  merge(dt,dfp,by = 'country',all.x = T) %>%
-    .[,c('iso3c',names(dt),c('population')),with=F] %>%
-    .[]
+read_covid_data <- function(path,folder='covid_data'){
+  data <- fread(file.path(path,folder,'data.csv'))
+  dpop <- fread(file.path(path,folder,'population.csv'))
+  drtm <- fread(file.path(path,folder,'real_time.csv'))
+  data[,.(dead=max(dead,na.rm = T),
+          recovered = max(recovered,na.rm = T),
+          confirmed = max(confirmed,na.rm = T)),
+       by = .(country,city,date)] %>%
+    .[,.(dead=sum(dead,na.rm = T),
+         recovered = sum(recovered,na.rm = T),
+         confirmed = sum(confirmed,na.rm = T)),
+      by = .(country,date)] -> data
+  df <- rbindlist(list(data,drtm))
+  df <- merge(df,dfpop, by = 'country')
+  df[,date:= as.Date(date)]
 }

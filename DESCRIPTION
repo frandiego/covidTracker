@@ -19,7 +19,8 @@ Imports:
     shinyWidgets (>= 0.4.9),
     highcharter (>= 0.7.0), 
     deSolve (>= 1.28), 
-    wbstats (>= 0.2)
+    wbstats (>= 0.2),
+    rvest (>= 0.3.5)
     
 
 

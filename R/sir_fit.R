@@ -6,8 +6,8 @@ sir_fit <- function(data,country){
        by=.(country,date)] -> df
   df <- df[date>=get_flag_date(df)]
   infected_vector <- df$confirmed
-  dt[country %in% country_,.(pop = .(max(population))),by=.(country)] %>%
-    .[['pop']] %>% unlist() %>% sum -> population
+  data[country %in% country_,.(pop=max(population,na.rm = T)),
+       by=.(country)][['pop']] %>% sum(na.rm = T) -> population
   init_ <- c(S = population-infected_vector[1],I = infected_vector[1],R = 0)
   SIR <- function(time, state, parameters, N = population) {
     par <- as.list(c(state, parameters))
@@ -31,11 +31,6 @@ sir_fit <- function(data,country){
   opt <- optim(c(0.5, 0.5), RSS,
                method = "L-BFGS-B",
                lower = c(0, 0), upper = c(1, 1))
-
-  opt <- optim(c(0.5, 0.5), RSS,
-               method = "L-BFGS-B",
-               lower = c(0, 0), upper = c(1, 1))
-
   print(opt$message)
   opt[['initialization']] <- init_
   opt$par <- setNames(opt$par, c("beta", "gamma"))
