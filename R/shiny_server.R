@@ -28,12 +28,12 @@ shiny_server <- function(path,folder='covid_data'){
     reactive_plot <- reactive({
       sir_fit_predict(data = rdata(),
                       country = input$id_country,
-                      log = input$id_log,
+                      log = input$id_switch,
                       month = input$id_max_month,
                       plot=T)
     })
     reactive_plot_variables <- reactive({
-      tau_plot_variables(data=rdata(),country_=input$id_country,gr=input$id_log)
+      tau_plot_variables(data=rdata(),country_=input$id_country,gr=input$id_switch)
     })
     output$id_sir <- highcharter::renderHighchart(expr = reactive_plot())
     output$id_info_conf <-  renderUI(reactive_infocard_confirmed())

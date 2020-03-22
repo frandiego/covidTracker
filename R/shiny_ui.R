@@ -7,11 +7,6 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
     side = "left",
     id = "my_sidebar",
     brand_url = 'https://geodb.com',
-    prettySwitch(slim = T,bigger = T,
-                 inputId = "id_log",
-                 label = '',
-                 value = TRUE,
-                 status = "primary"),
     pickerInput(
       inputId = "id_country",
       label = "Country",
@@ -20,6 +15,11 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
       options = list(
         `live-search` = TRUE)
     ),
+    prettySwitch(slim = T,bigger = T,
+                 inputId = "id_switch",
+                 label = 'Switch Graph',
+                 value = TRUE,
+                 status = "primary"),
     sliderTextInput(
       inputId = "id_max_month",
       label = 'Month',
@@ -79,7 +79,7 @@ shiny_ui_body <- function(){
       argonTab(
         tabName = "Metrics",
         active =F,
-        tauchartsOutput('id_metrics')
+        tauchartsOutput('id_metrics',width = '100%',height = '500px')
       )
     )
   )

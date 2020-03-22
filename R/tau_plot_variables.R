@@ -20,6 +20,7 @@ tau_plot_variables <- function(data,country_,gr=T){
     tau_guide_x( tick_format = "%b %d" ) %>%
     tau_tooltip(fields = c('date','value')) %>%
     tau_export_plugin() %>%
-    tau_legend()
+    tau_legend() %>%
+    tau_title(title = ifelse(gr,'Growth Rate','Totals'))
 
 }
