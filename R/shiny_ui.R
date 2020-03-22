@@ -7,13 +7,11 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
     side = "left",
     id = "my_sidebar",
     brand_url = 'https://geodb.com',
-    brand_logo = 'https://geodb.com/src/sections/HeaderEN/assets/icons/logo2acee178e01fd3dd965ddfecfc9162bb.svg',
     prettySwitch(slim = T,bigger = T,
-      inputId = "id_log",
-      label = "Log",
-      value = TRUE,
-      status = "primary"
-    ),
+                 inputId = "id_log",
+                 label = '',
+                 value = TRUE,
+                 status = "primary"),
     pickerInput(
       inputId = "id_country",
       label = "Country",
@@ -24,7 +22,7 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
     ),
     sliderTextInput(
       inputId = "id_max_month",
-      label = "",
+      label = 'Month',
       grid = TRUE,
       force_edges = TRUE,
       selected = 'May',
@@ -61,14 +59,27 @@ shiny_ui_footer <- function(){
 }
 shiny_ui_body <- function(){
   argonDashBody(
-    argonTabItems(
-      argonTabItem(
-        tabName = "tab_sir",
+    argonTabSet(
+      id = "tabset",
+      card_wrapper = TRUE,
+      horizontal = TRUE,
+      circle = FALSE,
+      size = "sm",
+      width = 12,
+      iconList = lapply(X = 1:3, FUN = argonIcon, name = "atom"),
+      argonTab(
+        tabName = "SIR",
+        active =T,
         uiOutput('id_info_recv'),
         uiOutput('id_info_conf'),
         uiOutput('id_info_dead'),
         highcharter::highchartOutput(outputId = 'id_sir',
                                      width = '100%', height = '500px')
+      ),
+      argonTab(
+        tabName = "Metrics",
+        active =F,
+        tauchartsOutput('id_metrics')
       )
     )
   )

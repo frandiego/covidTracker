@@ -20,7 +20,9 @@ Imports:
     highcharter (>= 0.7.0), 
     deSolve (>= 1.28), 
     wbstats (>= 0.2),
-    rvest (>= 0.3.5)
+    rvest (>= 0.3.5), 
+    taucharts (>= 0.4.5)
+
     
 
 

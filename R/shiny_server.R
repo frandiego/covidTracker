@@ -3,7 +3,7 @@ shiny_server <- function(path,folder='covid_data'){
     rdata <- reactive({
       invalidateLater(60000,session)
       read_covid_data(path=path,folder=folder)
-      })
+    })
     r_main_numbers <- reactive({
       get_main_numbers(rdata(),input$id_country)
     })
@@ -31,11 +31,15 @@ shiny_server <- function(path,folder='covid_data'){
                       log = input$id_log,
                       month = input$id_max_month,
                       plot=T)
-      })
+    })
+    reactive_plot_variables <- reactive({
+      tau_plot_variables(data=rdata(),country_=input$id_country,gr=input$id_log)
+    })
     output$id_sir <- highcharter::renderHighchart(expr = reactive_plot())
     output$id_info_conf <-  renderUI(reactive_infocard_confirmed())
     output$id_info_recv <-  renderUI(reactive_infocard_recovered())
     output$id_info_dead <-  renderUI(reactive_infocard_deads())
+    output$id_metrics <-  taucharts::renderTaucharts(reactive_plot_variables())
   }
 }
 
