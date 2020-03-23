@@ -30,7 +30,9 @@ shiny_server <- function(path,folder='covid_data'){
                       country = input$id_country,
                       log = input$id_switch,
                       month = input$id_max_month,
-                      plot=T)
+                      plot=T,
+                      lockdown=input$id_power,
+                      variables = input$id_variables)
     })
     reactive_plot_variables <- reactive({
       tau_plot_variables(data=rdata(),country_=input$id_country,gr=input$id_switch)

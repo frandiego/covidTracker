@@ -2,7 +2,7 @@ update_scrap_data <- function(path,filename = 'real_time.csv',url = NULL){
   if(is.null(url)){
     url <- 'https://www.worldometers.info/coronavirus'
   }
-  web <- read_html(url)
+  web <- xml2::read_html(url)
   df <- as.data.table(html_table(web)[[1]])
   df <- df[,c(names(df)[c(1,2,4,6)]),with=F]
   vars <- c('confirmed','dead','recovered')

@@ -18,7 +18,7 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
     prettySwitch(slim = T,bigger = T,
                  inputId = "id_switch",
                  label = 'Switch Graph',
-                 value = TRUE,
+                 value = F,
                  status = "primary"),
     sliderTextInput(
       inputId = "id_max_month",
@@ -28,6 +28,15 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
       selected = 'May',
       choices = month.abb
     ),
+    sliderInput(inputId = 'id_power',label = 'Lockdown coefficient',
+                min = 0, max = 100, step = 1, value = 45),
+    selectizeInput(inputId = 'id_variables',
+                   label='Variables',
+                   choices = c('susceptibles','predicted_infecteds','predicted_recovereds',
+                               'actual_confirmeds','actual_recovereds', 'actual_deads'),
+                   selected = c('predicted_infecteds',
+                                'actual_confirmeds','actual_recovereds', 'actual_deads'),
+                   multiple=T),
     argonSidebarDivider(),
     argonBadge(
       text = "Medium Post",

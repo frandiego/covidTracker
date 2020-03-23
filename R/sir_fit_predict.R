@@ -3,8 +3,17 @@ sir_fit_predict <- function(data,
                             country,
                             month = 'May',
                             log=T,
-                            plot=T){
+                            plot=T,
+                            lockdown=50,
+                            variables = NULL){
+  all_variables <- c('susceptibles','predicted_infecteds','predicted_recovereds',
+                     'actual_confirmeds','actual_recovereds', 'actual_deads')
+  colors <- c('#5e72e4','#172b4d','#11cdef','#fb6340','#2dce89','#f5365c')
+  varcol <- data.table(variable=all_variables,color=colors)
   ####################### fit
+  if(is.null(variables)){
+    variables <-all_variables
+  }
   country_ <- as.vector(country)
   data[country %in% country_,.(confirmed=sum(confirmed,na.rm = T),
                                dead=sum(dead,na.rm = T),
@@ -16,10 +25,10 @@ sir_fit_predict <- function(data,
   data[country %in% country_,.(pop=max(population,na.rm = T)),
        by=.(country)][['pop']] %>% sum(na.rm = T) %>% as.integer() -> population
   init_ <- c(S = population-infected_vector[1],I = infected_vector[1],R = 0)
-  SIR <- function(time, state, parameters, N = population) {
+  SIR <- function(time, state, parameters, N = population, H = lockdown) {
     par <- as.list(c(state, parameters))
     with(par, {
-      dS <- -beta/N * I * S
+      dS <- -beta/N * I * S * H
       dI <- beta/N * I * S - gamma * I
       dR <- gamma * I
       list(c(dS, dI, dR))
@@ -69,19 +78,28 @@ sir_fit_predict <- function(data,
   recovery_days = guess_recovery_days(dt)
   dt[,predicted_recovereds:=head(c(rep(0,recovery_days),
                                    predicted_recovereds),nrow(dt))]
+  dt[,country := dt[!is.na(country),unique(country)]]
+
   ####################### plot
   if(plot){
   dt[,date_str := format(as.Date(date),'%b %d %a')]
   dt %>%
     melt(c('country','date','date_str','index')) %>%
-    .[!is.na(value)]-> aux
+    .[!is.na(value)] %>%
+    .[variable %in% variables] %>%
+    .[,variable := factor(variable, levels = all_variables,ordered = T)] %>%
+    .[order(variable)] %>%
+    merge(varcol,by='variable') -> aux
   highchart() %>%
     hc_xAxis(categories = aux$date_str %>% unique()) %>%
     hc_add_series(data = aux, type = "spline",
-                  hcaes(y = value, group = variable),
+                  hcaes(y = value, group=variable),
                   dashStyle = 'solid',
                   marker = list(enabled=F),
-                  showInLegend = T) %>%
+                  lineWidth=4,
+                  showInLegend = T
+                  ) %>%
+    hc_colors(aux[,unique(color)]) %>%
     hc_yAxis(type = ifelse(log,'logarithmic','linear'),
              title=list(text=ifelse(log,'Population in Logs',
                                     'Population'))) %>%
