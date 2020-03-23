@@ -11,10 +11,10 @@ spain_reset_data <- function(path,folder='covid_data'){
     purrr::map2(.x=.,.y=names(spain_raw_data_path_list()),
                 .f=function(x,y) x[,type:= y]) %>%
     rbindlist() %>%
-    .[,c('CCAA','date','total','type'),with=F] %>%
-    dcast(CCAA+date~type,value.var='total') %>%
-    .[!grepl('total',tolower(CCAA))] %>%
-    setnames('CCAA','region') %>%
+    setnames(c('CCAA','fecha'),c('region','date')) %>%
+    .[,c('region','date','total','type'),with=F] %>%
+    dcast(region+date~type,value.var='total') %>%
+    .[!grepl('total',tolower(region))] %>%
     .[,date := as.Date(date)] %>%
     merge(.,fread(file.path(path_,'spain_population.csv')),
           all.x=T) %>%
