@@ -1,9 +1,8 @@
-spain_reset_data <- function(path,folder='covid_data'){
-  path_ <- file.path(path,folder)
+update_spain_data <- function(dir,filename='spain_data.csv'){
   'https://raw.githubusercontent.com/frandiego' %>%
     file.path('data/master/spain_population.csv') -> pop_path
-  if(!file.exists(file.path(path_,'spain_population.csv'))){
-    fwrite(fread(pop_path,file.path(path_,'spain_population')))
+  if(!file.exists(file.path(dir,'spain_population.csv'))){
+    fwrite(fread(pop_path,file.path(dir,'spain_population')))
   }
 
   spain_raw_data_path_list() %>%
@@ -16,7 +15,7 @@ spain_reset_data <- function(path,folder='covid_data'){
     dcast(region+date~type,value.var='total') %>%
     .[!grepl('total',tolower(region))] %>%
     .[,date := as.Date(date)] %>%
-    merge(.,fread(file.path(path_,'spain_population.csv')),
+    merge(.,fread(file.path(pop_path)),
           all.x=T) %>%
-    fwrite(file.path(path_,'spain_data.csv'))
+    fwrite(file.path(dir,filename))
 }

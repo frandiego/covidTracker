@@ -20,7 +20,6 @@ sir_fit_predict <- function(data,
                                recovered=sum(recovered,na.rm = T)),
        by=.(country,date)] -> df
   df <- df[date>=get_flag_date(df)]
-
   infected_vector <- df$confirmed
   data[country %in% country_,.(pop=max(population,na.rm = T)),
        by=.(country)][['pop']] %>% sum(na.rm = T) %>% as.integer() -> population
@@ -76,6 +75,7 @@ sir_fit_predict <- function(data,
 
 
   recovery_days = guess_recovery_days(dt)
+
   dt[,predicted_recovereds:=head(c(rep(0,recovery_days),
                                    predicted_recovereds),nrow(dt))]
   dt[,country := dt[!is.na(country),unique(country)]]

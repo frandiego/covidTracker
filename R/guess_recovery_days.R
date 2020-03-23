@@ -6,6 +6,7 @@ guess_recovery_days <- function(dt){
 
   dt[actual_confirmeds >= dt[recovered_day][['actual_recovereds']]] %>%
     .[order(date)] %>% head(1) %>% .[['date']] -> f_date
-  as.integer(l_date-f_date)
-
+  rd = as.integer(l_date-f_date)
+  rd <- ifelse(length(rd)==0,8,rd)
+  return(rd)
 }

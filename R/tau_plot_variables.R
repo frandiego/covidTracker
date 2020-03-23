@@ -1,6 +1,11 @@
 tau_plot_variables <- function(data,country_,gr=T){
   variables <- c('confirmed','dead','recovered')
   df <- data[country%in%country_,c('country','date',variables),with=F]
+  variables_zero <-  variables[colSums(df[,variables,with=F],na.rm = T)==0]
+  if(length(variables_zero)>0){
+    df <- df[,-c(variables_zero),with=F]
+    variables <- setdiff(variables,variables_zero)
+  }
   if(gr){
     df[,c(variables):=
          purrr::map(.SD,~c(0,diff(log(.)))),.SDcols=c(variables)]
