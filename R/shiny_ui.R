@@ -66,7 +66,7 @@ shiny_ui_body <- function(){
       circle = FALSE,
       size = "sm",
       width = 12,
-      iconList = lapply(X = 1:3, FUN = argonIcon, name = "atom"),
+      iconList = list(shiny::icon('chart-line'),shiny::icon('chart-bar')),
       argonTab(
         tabName = "SIR",
         active =T,
@@ -79,6 +79,7 @@ shiny_ui_body <- function(){
       argonTab(
         tabName = "Metrics",
         active =F,
+        textOutput('id_metrics_title'),
         tauchartsOutput('id_metrics',width = '100%',height = '500px')
       )
     )
