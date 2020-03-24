@@ -8,13 +8,17 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
     id = "my_sidebar",
     brand_logo = 'https://geodb.com/src/sections/HeaderEN/assets/icons/logo2acee178e01fd3dd965ddfecfc9162bb.svg',
     brand_url = 'https://geodb.com',
+
     pickerInput(
       inputId = "id_country",
-      label = "Country",
+      label=NULL,
       choices = get_countries(path=path,folder=folder),
-      selected = 'Spain',
-      options = list(
-        `live-search` = TRUE)
+      multiple = F,
+      options = pickerOptions(
+        actionsBox = TRUE,
+        header = "Region",
+        liveSearch = T,liveSearchNormalize = T
+      )
     ),
     knobInput(
       inputId = "id_power",
