@@ -6,6 +6,7 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
     size = "md",
     side = "left",
     id = "my_sidebar",
+    brand_logo = 'https://geodb.com/src/sections/HeaderEN/assets/icons/logo2acee178e01fd3dd965ddfecfc9162bb.svg',
     brand_url = 'https://geodb.com',
     pickerInput(
       inputId = "id_country",
@@ -15,22 +16,9 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
       options = list(
         `live-search` = TRUE)
     ),
-    prettySwitch(slim = T,bigger = T,
-                 inputId = "id_switch",
-                 label = 'Switch Graph',
-                 value = F,
-                 status = "primary"),
-    sliderTextInput(
-      inputId = "id_max_month",
-      label = 'Month',
-      grid = TRUE,
-      force_edges = TRUE,
-      selected = 'Apr',
-      choices = month.abb
-    ),
     knobInput(
       inputId = "id_power",
-      label = "Lockdown coefficient",
+      label = "Lockdown coefficient (SIR)",
       value = 50,
       min = 0,
       displayInput = T,
@@ -44,7 +32,7 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
       immediate=F
     ),
     selectizeInput(inputId = 'id_variables',
-                   label='Variables',
+                   label='Variables (SIR)',
                    choices = c('susceptibles','predicted_infecteds','predicted_recovereds',
                                'actual_confirmeds','actual_recovereds', 'actual_deads'),
                    selected = c('predicted_infecteds',
@@ -92,9 +80,24 @@ shiny_ui_body <- function(){
       argonTab(
         tabName = "SIR",
         active =T,
-        uiOutput('id_info_recv'),
-        uiOutput('id_info_conf'),
-        uiOutput('id_info_dead'),
+        argonRow(center=F,
+                 argonColumn(uiOutput('id_info_recv',width=4)),
+                 argonColumn(uiOutput('id_info_conf',width=4)),
+                 argonColumn(uiOutput('id_info_dead',width=4))),
+        argonRow(),
+        argonRow(
+          argonColumn(
+        sliderTextInput(
+          inputId = "id_max_month",
+          label = NULL,
+          grid = F,
+          force_edges = TRUE,
+          selected = 'Apr',
+          choices = month.abb
+        ),width=6),
+        argonColumn(
+          materialSwitch(inputId = "id_sir_log",label = "Log",status = "primary",
+                         inline = T, value=F),width=6)),
         highcharter::highchartOutput(outputId = 'id_sir',
                                      width = '100%', height = '500px')
       ),
@@ -102,7 +105,10 @@ shiny_ui_body <- function(){
         tabName = "Metrics",
         active =F,
         textOutput('id_metrics_title'),
-        tauchartsOutput('id_metrics',width = '100%',height = '500px')
+        prettySwitch(inputId = "id_metrics_log",label = "Log",status = "primary", fill = TRUE,inline = T, value=F),
+        prettySwitch(inputId = "id_metrics_gr",label = "Growth Rate",status = "primary", fill = TRUE,inline = T, value=T),
+        prettySwitch(inputId = "id_metrics_smooth",label = "Smooth",status = "primary", fill = TRUE,inline = T, value=T),
+        highcharter::highchartOutput('id_metrics',width = '100%',height = '500px')
       )
     )
   )

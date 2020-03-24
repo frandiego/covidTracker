@@ -8,7 +8,7 @@ sir_fit_predict <- function(data,
                             variables = NULL){
   all_variables <- c('susceptibles','predicted_infecteds','predicted_recovereds',
                      'actual_confirmeds','actual_recovereds', 'actual_deads')
-  colors <- c('#5e72e4','#172b4d','#11cdef','#fb6340','#2dce89','#f5365c')
+  colors <- c('#fb6340','#172b4d','#11cdef','#5e72e4','#2dce89','#f5365c')
   varcol <- data.table(variable=all_variables,color=colors)
   ####################### fit
   if(is.null(variables)){
@@ -93,7 +93,7 @@ sir_fit_predict <- function(data,
   highchart() %>%
     hc_xAxis(categories = aux$date_str %>% unique()) %>%
     hc_add_series(data = aux, type = "spline",
-                  hcaes(y = value, group=variable),
+                  hcaes(y = round(value), group=variable),
                   dashStyle = 'solid',
                   marker = list(enabled=F),
                   lineWidth=4,
@@ -104,7 +104,9 @@ sir_fit_predict <- function(data,
              title=list(text=ifelse(log,'Population in Logs',
                                     'Population'))) %>%
     hc_xAxis(title='') %>%
-    hc_responsive()
+    hc_responsive() %>%
+    hc_tooltip(crosshairs = TRUE,  sort = TRUE, table = TRUE)
+
   }else{
     return(dt)
   }
