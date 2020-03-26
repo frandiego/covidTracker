@@ -102,7 +102,9 @@ sir_fit_predict <- function(data,
 
     v_ <- ifelse(type=='Total','value',ifelse(type=='Acceleration','value_acc',ifelse(type=='Differences','value_diff','value_gr')))
     v_ <- ifelse(smooth,paste0(v_,'_smooth'),v_)
-
+    if(type%in%c('Total', 'Growth v')){
+      v_ <- paste0('round(',v_,')')
+    }
     highchart() %>%
       hc_xAxis(categories = aux$date_str %>% unique()) %>%
       hc_add_series(data = aux, type = "spline",
