@@ -93,12 +93,14 @@ sir_fit_predict <- function(data,
       merge(varcol,by='variable') -> aux
 
     aux[,value_smooth := casteljau(fill_strange(value,0)),by=.(variable,country)]
+    aux[,value_diff := c(0,diff(value)), by=.(variable,country)]
+    aux[,value_diff_smooth := casteljau(fill_strange(value_diff,0)), by=.(variable,country)]
     aux[,value_gr := c(0,diff(log(value))), by=.(variable,country)]
     aux[,value_acc := c(0,diff(log(value_gr))), by = .(variable,country)]
     aux[,value_gr_smooth := casteljau(fill_strange(value_gr,0)),by=.(variable,country)]
     aux[,value_acc_smooth := casteljau(fill_strange(value_acc,0)),by=.(variable,country)]
 
-    v_ <- ifelse(type=='Total','value',ifelse(type=='Acceleration','value_acc','value_gr'))
+    v_ <- ifelse(type=='Total','value',ifelse(type=='Acceleration','value_acc',ifelse(type=='Differences','value_diff','value_gr')))
     v_ <- ifelse(smooth,paste0(v_,'_smooth'),v_)
 
     highchart() %>%

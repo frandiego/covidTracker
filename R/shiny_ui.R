@@ -23,7 +23,7 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
     knobInput(
       inputId = "id_power",
       label = "Lockdown coefficient",
-      value = 30,
+      value = 25,
       min = 0,
       displayInput = T,
       max = 100,
@@ -94,7 +94,7 @@ shiny_ui_body <- function(){
             inputId = "id_type",
             status = 'primary',
             label = NULL,
-            choices = c("Total",
+            choices = c("Total", "Differences",
                         "Growth Rates", "Acceleration"),
             selected = "Total",
             individual = T,
