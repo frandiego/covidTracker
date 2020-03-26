@@ -2,7 +2,8 @@ read_covid_data <- function(path,folder='covid_data'){
   data <- fread(file.path(path,folder,'data.csv'))
   dpop <- fread(file.path(path,folder,'population.csv'))
   drtm <- fread(file.path(path,folder,'real_time.csv'))
-  dtsp <- spain_tidy_data(fread(file.path(path,folder,'spain_data.csv')))
+  dtsp <- spain_tidy_data(file.path(path,folder,'spain_data.csv'),
+                          file.path(path,folder,'spain_population.csv'))
   data[,.(dead=max(dead,na.rm = T),
           recovered = max(recovered,na.rm = T),
           confirmed = max(confirmed,na.rm = T)),
@@ -11,6 +12,7 @@ read_covid_data <- function(path,folder='covid_data'){
          recovered = sum(recovered,na.rm = T),
          confirmed = sum(confirmed,na.rm = T)),
       by = .(country,date)] -> data
+
   df <- rbindlist(list(data,drtm))
   df <- merge(df,dpop, by = 'country')
   df <- rbindlist(l=list(df,dtsp))
