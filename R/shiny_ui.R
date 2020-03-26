@@ -22,8 +22,8 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
     ),
     knobInput(
       inputId = "id_power",
-      label = "Lockdown coefficient (SIR)",
-      value = 50,
+      label = "Lockdown coefficient",
+      value = 30,
       min = 0,
       displayInput = T,
       max = 100,
@@ -36,7 +36,7 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
       immediate=F
     ),
     selectizeInput(inputId = 'id_variables',
-                   label='Variables (SIR)',
+                   label='Variables',
                    choices = c('susceptibles','predicted_infecteds','predicted_recovereds',
                                'actual_confirmeds','actual_recovereds', 'actual_deads'),
                    selected = c('predicted_infecteds',
@@ -57,7 +57,7 @@ shiny_ui_navbar <- function(){
   argonDashNavbar()
 }
 shiny_ui_header <- function(){
-  argonDashHeader(
+  argonDashHeader(bottom_padding = 6,height = '200px',
     mask = T,
     opacity = 5,
     gradient = TRUE,
@@ -73,17 +73,7 @@ shiny_ui_footer <- function(){
 }
 shiny_ui_body <- function(){
   argonDashBody(
-    argonTabSet(
-      id = "tabset",
-      card_wrapper = TRUE,
-      horizontal = TRUE,
-      circle = FALSE,
-      size = "sm",
-      width = 12,
-      iconList = list(shiny::icon('chart-line'),shiny::icon('chart-bar')),
-      argonTab(
-        tabName = "SIR",
-        active =T,
+    shiny::br(),
         argonRow(center=F,
                  argonColumn(uiOutput('id_info_recv',width=4)),
                  argonColumn(uiOutput('id_info_conf',width=4)),
@@ -98,23 +88,26 @@ shiny_ui_body <- function(){
           force_edges = TRUE,
           selected = 'Apr',
           choices = month.abb
-        ),width=6),
+        ),width=5),
         argonColumn(
-          materialSwitch(inputId = "id_sir_log",label = "Log",status = "primary",
-                         inline = T, value=F),width=6)),
+          radioGroupButtons(
+            inputId = "id_type",
+            status = 'primary',
+            label = NULL,
+            choices = c("Total",
+                        "Growth Rates", "Acceleration"),
+            selected = "Total",
+            individual = T,
+            justified = T,
+            size = 'normal'
+          ),width=5),
+        argonColumn(
+          materialSwitch(inputId = "id_sir_log",label = "Logs  ",status = "success",right = T,
+                         inline = T, value=F),
+          materialSwitch(inputId = "id_sir_smooth",label = "Smooth",status = "success",right = T,
+                         inline = T, value=T),width=2)),
         highcharter::highchartOutput(outputId = 'id_sir',
                                      width = '100%', height = '500px')
-      ),
-      argonTab(
-        tabName = "Metrics",
-        active =F,
-        textOutput('id_metrics_title'),
-        prettySwitch(inputId = "id_metrics_log",label = "Log",status = "primary", fill = TRUE,inline = T, value=F),
-        prettySwitch(inputId = "id_metrics_gr",label = "Growth Rate",status = "primary", fill = TRUE,inline = T, value=T),
-        prettySwitch(inputId = "id_metrics_smooth",label = "Smooth",status = "primary", fill = TRUE,inline = T, value=T),
-        highcharter::highchartOutput('id_metrics',width = '100%',height = '500px')
-      )
-    )
   )
 }
 shiny_ui <- function(path,folder='covid_data'){

@@ -8,19 +8,25 @@ shiny_server <- function(path,folder='covid_data'){
       get_main_numbers(rdata(),input$id_country)
     })
     reactive_infocard_confirmed <- reactive({
-      return(argon_info_card(n = r_main_numbers()$confirmed,
+      return(argon_info_card(n = r_main_numbers()$today$confirmed,
+                             stat=r_main_numbers()$gr$confirmed,
+                             yest=r_main_numbers()$yesterday$confirmed,
                              title = 'Confirmed Infected',
                              icon = icon('ambulance'),width = 12,
                              background_color = 'orange'))
     })
     reactive_infocard_recovered <- reactive({
-      return(argon_info_card(n = r_main_numbers()$recovered,
+      return(argon_info_card(n = r_main_numbers()$today$recovered,
+                             stat=r_main_numbers()$gr$recovered,
+                             yest=r_main_numbers()$yesterday$recovered,
                              title = 'Recovered',
                              icon = icon('heart'),width = 12,
                              background_color = 'green'))
     })
     reactive_infocard_deads <- reactive({
-      return(argon_info_card(n = r_main_numbers()$dead,
+      return(argon_info_card(n = r_main_numbers()$today$dead,
+                             stat=r_main_numbers()$gr$dead,
+                             yest=r_main_numbers()$yesterday$dead,
                              title = 'Deads',
                              icon = icon('cross'),width = 12,
                              background_color = 'red'))
@@ -32,7 +38,9 @@ shiny_server <- function(path,folder='covid_data'){
                       month = input$id_max_month,
                       plot=T,
                       lockdown=input$id_power,
-                      variables = input$id_variables)
+                      variables = input$id_variables,
+                      type = input$id_type,
+                      smooth = input$id_sir_smooth)
     })
     reactive_plot_variables <- reactive({
       hc_plot_variables(data=rdata(),country=input$id_country,

@@ -5,9 +5,7 @@ sir_fit_predict <- function(data,
                             plot=T,
                             lockdown=50,
                             variables = NULL,
-                            total=T,
-                            gr=F,
-                            acc=F,
+                            type='Total',
                             smooth=F){
   all_variables <- c('susceptibles','predicted_infecteds','predicted_recovereds',
                      'actual_confirmeds','actual_recovereds', 'actual_deads')
@@ -100,7 +98,7 @@ sir_fit_predict <- function(data,
     aux[,value_gr_smooth := casteljau(fill_strange(value_gr,0)),by=.(variable,country)]
     aux[,value_acc_smooth := casteljau(fill_strange(value_acc,0)),by=.(variable,country)]
 
-    v_ <- ifelse(total,'value',ifelse(gr,'value_gr','value_acc'))
+    v_ <- ifelse(type=='Total','value',ifelse(type=='Acceleration','value_acc','value_gr'))
     v_ <- ifelse(smooth,paste0(v_,'_smooth'),v_)
 
     highchart() %>%
