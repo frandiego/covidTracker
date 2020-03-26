@@ -1,11 +1,14 @@
-
 sir_fit_predict <- function(data,
                             country,
                             month = 'May',
                             log=T,
                             plot=T,
                             lockdown=50,
-                            variables = NULL){
+                            variables = NULL,
+                            total=T,
+                            gr=F,
+                            acc=F,
+                            smooth=F){
   all_variables <- c('susceptibles','predicted_infecteds','predicted_recovereds',
                      'actual_confirmeds','actual_recovereds', 'actual_deads')
   colors <- c('#fb6340','#172b4d','#11cdef','#5e72e4','#2dce89','#f5365c')
@@ -82,33 +85,42 @@ sir_fit_predict <- function(data,
 
   ####################### plot
   if(plot){
-  dt[,date_str := format(as.Date(date),'%b %d %a')]
-  dt %>%
-    melt(c('country','date','date_str','index')) %>%
-    .[!is.na(value)] %>%
-    .[variable %in% variables] %>%
-    .[,variable := factor(variable, levels = all_variables,ordered = T)] %>%
-    .[order(variable)] %>%
-    merge(varcol,by='variable') -> aux
-  highchart() %>%
-    hc_xAxis(categories = aux$date_str %>% unique()) %>%
-    hc_add_series(data = aux, type = "spline",
-                  hcaes(y = round(value), group=variable),
-                  dashStyle = 'solid',
-                  marker = list(enabled=F),
-                  lineWidth=4,
-                  showInLegend = T
-                  ) %>%
-    hc_colors(aux[,unique(color)]) %>%
-    hc_yAxis(type = ifelse(log,'logarithmic','linear'),
-             title=list(text=ifelse(log,'Population in Logs',
-                                    'Population'))) %>%
-    hc_xAxis(title='') %>%
-    hc_responsive() %>%
-    hc_tooltip(crosshairs = TRUE,  sort = TRUE, table = TRUE)
+    dt[,date_str := format(as.Date(date),'%b %d %a')]
+    dt %>%
+      melt(c('country','date','date_str','index')) %>%
+      .[!is.na(value)] %>%
+      .[variable %in% variables] %>%
+      .[,variable := factor(variable, levels = all_variables,ordered = T)] %>%
+      .[order(variable)] %>%
+      merge(varcol,by='variable') -> aux
+
+    aux[,value_smooth := casteljau(fill_strange(value,0)),by=.(variable,country)]
+    aux[,value_gr := c(0,diff(log(value))), by=.(variable,country)]
+    aux[,value_acc := c(0,diff(log(value_gr))), by = .(variable,country)]
+    aux[,value_gr_smooth := casteljau(fill_strange(value_gr,0)),by=.(variable,country)]
+    aux[,value_acc_smooth := casteljau(fill_strange(value_acc,0)),by=.(variable,country)]
+
+    v_ <- ifelse(total,'value',ifelse(gr,'value_gr','value_acc'))
+    v_ <- ifelse(smooth,paste0(v_,'_smooth'),v_)
+
+    highchart() %>%
+      hc_xAxis(categories = aux$date_str %>% unique()) %>%
+      hc_add_series(data = aux, type = "spline",
+                    hcaes_string(y = v_, group="variable"),
+                    dashStyle = 'solid',
+                    marker = list(enabled=F),
+                    lineWidth=4,
+                    showInLegend = T
+      ) %>%
+      hc_colors(aux[,unique(color)]) %>%
+      hc_yAxis(type = ifelse(log,'logarithmic','linear'),
+               title=list(text=ifelse(log,'Population in Logs',
+                                      'Population'))) %>%
+      hc_xAxis(title='') %>%
+      hc_responsive() %>%
+      hc_tooltip(crosshairs = TRUE,  sort = TRUE, table = TRUE)
 
   }else{
-    return(dt)
+    return(dt[])
   }
 }
-
