@@ -23,7 +23,7 @@ shiny_ui_sidebar <- function(path,folder='covid_data'){
     knobInput(
       inputId = "id_power",
       label = "Lockdown coefficient",
-      value = 25,
+      value = 50,
       min = 0,
       displayInput = T,
       max = 100,
@@ -86,7 +86,7 @@ shiny_ui_body <- function(){
           label = NULL,
           grid = F,
           force_edges = TRUE,
-          selected = 'Apr',
+          selected = 'May',
           choices = month.abb
         ),width=5),
         argonColumn(
@@ -105,7 +105,7 @@ shiny_ui_body <- function(){
           materialSwitch(inputId = "id_sir_log",label = "Logs  ",status = "success",right = T,
                          inline = T, value=F),
           materialSwitch(inputId = "id_sir_smooth",label = "Smooth",status = "success",right = T,
-                         inline = T, value=T),width=2)),
+                         inline = T, value=F),width=2)),
         highcharter::highchartOutput(outputId = 'id_sir',
                                      width = '100%', height = '500px')
   )

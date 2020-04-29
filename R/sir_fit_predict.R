@@ -24,13 +24,13 @@ sir_fit_predict <- function(data,
   infected_vector <- df$confirmed
   data[country %in% country_,.(pop=max(population,na.rm = T)),
        by=.(country)][['pop']] %>% sum(na.rm = T) %>% as.integer() -> population
-  init_ <- c(S = population-infected_vector[1],I = infected_vector[1],R = 0)
+  init_ <- c(S = population-infected_vector[17],I = infected_vector[17],R = 0)
   SIR <- function(time, state, parameters, N = population, H = lockdown) {
     par <- as.list(c(state, parameters))
     with(par, {
-      dS <- -beta/N * I * S * H
-      dI <- beta/N * I * S - gamma * I
-      dR <- gamma * I
+      dS <- -beta/N * I * S * H/2 * 3
+      dI <- beta/N * I * S  *0.7 - gamma * I
+      dR <- gamma  * I
       list(c(dS, dI, dR))
     })
   }
@@ -94,7 +94,7 @@ sir_fit_predict <- function(data,
 
     aux[,value_smooth := casteljau(fill_strange(value,0)),by=.(variable,country)]
     aux[,value_diff := c(0,diff(value)), by=.(variable,country)]
-    aux[,value_diff_smooth := casteljau(fill_strange(value_diff,0)), by=.(variable,country)]
+    aux[,value_diff_smooth := casteljau(x= fill_strange(value_diff,0)), by=.(variable,country)]
     aux[,value_gr := c(0,diff(log(value))), by=.(variable,country)]
     aux[,value_acc := c(0,diff(log(value_gr))), by = .(variable,country)]
     aux[,value_gr_smooth := casteljau(fill_strange(value_gr,0)),by=.(variable,country)]
@@ -105,6 +105,14 @@ sir_fit_predict <- function(data,
     if(type%in%c('Total', 'Growth v')){
       v_ <- paste0('round(',v_,')')
     }
+<<<<<<< HEAD
+    if(hour(lubridate::now())<12){
+      aux[(as.Date(date)==as.Date(lubridate::today())) &
+            variable %in% c('actual_confirmeds','actual_dead', 'actual_recovereds'),
+          c('value_diff', 'value_diff_smooth', 'value_gr', 'value_acc','value_gr_smooth','value_acc_smooth') := NA]
+    }
+=======
+>>>>>>> 2f5122a8c95d84886500b03e43c3ab9ed645ecd4
     highchart() %>%
       hc_xAxis(categories = aux$date_str %>% unique()) %>%
       hc_add_series(data = aux, type = "spline",
